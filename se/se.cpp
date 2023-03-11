@@ -6,8 +6,23 @@
 
 int main()
 {
+    char playersChoiceChar;
+    int playersChoiceInt;
     BattleField test1;
     test1.printField();
+    do
+    {
+        std::cout << "Choose letter to shoot (from 'a' to 'j' only)" << std::endl;
+        std::cin >> playersChoiceChar;
+
+    } while (playersChoiceChar!='a'&& playersChoiceChar != 'b'&& playersChoiceChar != 'c'&& playersChoiceChar != 'd'&& playersChoiceChar != 'e'&& playersChoiceChar != 'f'&& playersChoiceChar != 'g'&& playersChoiceChar != 'h'&& playersChoiceChar != 'i'&& playersChoiceChar != 'j');
+    do
+    {
+        std::cout << "Choose number to shoot (from '1' to '10' only)" << std::endl;
+        std::cin >> playersChoiceInt;
+
+    } while (playersChoiceInt!=1 && playersChoiceInt != 2 && playersChoiceInt != 3 && playersChoiceInt != 4 && playersChoiceInt != 5 && playersChoiceInt != 6 && playersChoiceInt != 7 && playersChoiceInt != 8 && playersChoiceInt != 9 && playersChoiceInt != 10);
+    playerShot(playersChoiceChar, playersChoiceInt, test1);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
