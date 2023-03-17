@@ -10,15 +10,17 @@ class BattleShip
 private:
 	int m_ShipSize;
 	int m_HitCount;
-	bool m_Oriental;
+	bool m_Oriental;																	//если false - вертикальное, если true - горизонтальное
 public:
 	BattleShip(int size);
 	int getHitCount();
+	int getShipSize();
 	void hitCountAfterHit();
-	void setOriental();
+	void setOriental(bool oriental);
+	bool getOriental();
+	void shipWreck(BattleField& battlefield);
 	friend void setShipOriental(bool oriental, BattleShip& battleship);					//ориентация корабля
 	friend void playerShot(char playersChoiceChar, int playersChoiceInt, BattleField& playerField, BattleShip& battleship);
-	friend void shipWreck(BattleShip& battleship, BattleField& battlefield);
 	friend void BattleField::placeShip(BattleShip& battleship);
 };
 class BattleField
@@ -27,9 +29,9 @@ private:
 	int m_BattleField[10][10];
 public:
 	BattleField();
-	void placeShip(BattleShip& battleship);
+	void placeShip(BattleShip& battleship);										//размещение корабля
 	int& operator()(char playersChoiceChar, int playersChoiceInt);				//перегруз индексации  
-	friend void shipWreck(BattleShip& battleship, BattleField& battlefield);
+	friend void BattleShip::shipWreck(BattleField& battlefield);
 	friend void setShipOriental(bool oriental, BattleShip& battleship);
 	friend void playerShot(char playersChoiceChar, int playersChoiceInt, BattleField& playerField, BattleShip& battleship);
 	void printField();

@@ -6,6 +6,7 @@
 
 int main()
 {
+    setlocale(LC_ALL, "Russian");
     char playersChoiceChar;
     int playersChoiceInt;
     BattleField test1;
