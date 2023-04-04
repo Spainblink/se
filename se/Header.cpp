@@ -1,4 +1,5 @@
 #include "Header.h"
+int BattleShip::m_Count = 0;
 BattleField::BattleField () 
 {
 	for (int raw = 0; raw < BattleFieldSize; ++raw) {
@@ -16,9 +17,9 @@ void BattleField::printField()
 		std::cout << std::endl;
 	}
 };
-int& BattleField::operator()(char playerChoiceChar, int playerChoiceInt) //проверка корректности проводитс€ на входе, после ввода юзера
+int& BattleField::operator()(int playerChoiceInt, char playerChoiceChar) //проверка корректности проводитс€ на входе, после ввода юзера
 {
-	return m_BattleField[charToInt(playerChoiceChar)][playerChoiceInt - 1];
+	return m_BattleField[playerChoiceInt - 1][charToInt(playerChoiceChar)];
 }
 void BattleField::placeShip(BattleShip& battleship)
 {
@@ -27,23 +28,45 @@ void BattleField::placeShip(BattleShip& battleship)
 	int playersChoiceInt;
 	std::cout << "¬ведите 1 - если корабль располагаем горизонтально или 0 - если вертикально : " << std::endl;
 	std::cin >> oriental;
-	std::cout << std::endl;
-	std::cout << "¬ведите стобец дл€ размещени€ корабл€ от a до j (английский алфавит) :" << std::endl;
+	std::cout << "\n¬ведите стобец дл€ размещени€ корабл€ от a до j (английский алфавит) :" << std::endl;
 	std::cin >> playersChoiceChar;
-	std::cout << std::endl;
-	std::cout << "¬ведите строку дл€ размещени€ корабл€ от 1 до 10 :" << std::endl;
+	std::cout << "\n¬ведите строку дл€ размещени€ корабл€ от 1 до 10 :" << std::endl;
 	std::cin >> playersChoiceInt;
 	battleship.setOriental(oriental);
-	if (battleship.getOriental() && ((charToInt(playersChoiceChar) + battleship.getShipSize()) > (BattleFieldSize - 1)))
+	if (battleship.getOriental())
 	{
-
+		if (charToInt(playersChoiceChar) + battleship.getShipSize() > (BattleFieldSize - 1))
+		{
+			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - 1) - battleship.getShipSize(); --start)
+			{
+				m_BattleField[playersChoiceInt - 1][start] = battleship.getId();
+			}
+		}
+		else
+		{
+			for (int start = charToInt(playersChoiceChar); start < charToInt(playersChoiceChar) + battleship.getShipSize(); ++start)
+			{
+				m_BattleField[playersChoiceInt - 1][start] = battleship.getId();
+			}
+		}
+	}
+	else if (battleship.getOriental() == false)
+	{
+		if ((playersChoiceInt - 1) + battleship.getShipSize() > BattleFieldSize - 1)
+		{
+			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - 1) - battleship.getShipSize(); --start)
+			{
+				m_BattleField[start][charToInt(playersChoiceChar)] = battleship.getId();
+			}
+		}
 	}
 };
-BattleShip::BattleShip(int size)		
+BattleShip::BattleShip(int size, bool oriental = false)
 {
 	m_ShipSize = size;
-		m_HitCount = m_ShipSize;
-		m_Oriental = false;
+	m_Oriental = oriental;
+	m_HitCount = m_ShipSize;
+	m_Id = ++m_Count;
 };
 int BattleShip::getShipSize()
 	{
@@ -125,7 +148,7 @@ int charToInt(char pCh)
 		break;
 	}
 }
-void setShipOriental(bool oriental, BattleShip& battleship)
+int BattleShip::getId()
 {
-	std::cout << battleship.m_Oriental << std::endl;
-};
+	return m_Id;
+}
