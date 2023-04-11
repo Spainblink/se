@@ -21,23 +21,21 @@ int& BattleField::operator()(int playerChoiceInt, char playerChoiceChar) //прове
 {
 	return m_BattleField[playerChoiceInt - 1][charToInt(playerChoiceChar)];
 }
-void BattleField::placeShip(BattleShip& battleship)
+void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли корабль по горизонтали или вертикали
 {
 	bool oriental;
 	char playersChoiceChar;
 	int playersChoiceInt;
-	std::cout << "Введите 1 - если корабль располагаем горизонтально или 0 - если вертикально : " << std::endl;
-	std::cin >> oriental;
-	std::cout << "\nВведите стобец для размещения корабля от a до j (английский алфавит) :" << std::endl;
-	std::cin >> playersChoiceChar;
-	std::cout << "\nВведите строку для размещения корабля от 1 до 10 :" << std::endl;
-	std::cin >> playersChoiceInt;
+	std::cout << "Размещение корабля" << std::endl;
+	std::cout << "Для размещения корабля по вертикали введите 0, по горизонтали 1: " << std::endl;
 	battleship.setOriental(oriental);
+	setPlayersChar(playersChoiceChar);
+	setPlayersInt(playersChoiceInt);
 	if (battleship.getOriental())
 	{
-		if (charToInt(playersChoiceChar) + battleship.getShipSize() > (BattleFieldSize - 1))
+		if ((charToInt(playersChoiceChar) + battleship.getShipSize() - BattleFieldSize) < 0)
 		{
-			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - 1) - battleship.getShipSize(); --start)
+			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - battleship.getShipSize()); --start)
 			{
 				m_BattleField[playersChoiceInt - 1][start] = battleship.getId();
 			}
@@ -52,13 +50,18 @@ void BattleField::placeShip(BattleShip& battleship)
 	}
 	else if (battleship.getOriental() == false)
 	{
-		if ((playersChoiceInt - 1) + battleship.getShipSize() > BattleFieldSize - 1)
+		if ((playersChoiceInt - 1 + battleship.getShipSize() - BattleFieldSize) < 0)
 		{
-			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - 1) - battleship.getShipSize(); --start)
+			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - battleship.getShipSize()); --start)
 			{
 				m_BattleField[start][charToInt(playersChoiceChar)] = battleship.getId();
 			}
 		}
+		else 
+			for (int start = playersChoiceInt - 1; start < playersChoiceInt - 1 + battleship.getShipSize(); ++start)
+			{
+				m_BattleField[start][charToInt(playersChoiceChar)] = battleship.getId();
+			}
 	}
 };
 BattleShip::BattleShip(int size, bool oriental = false)
@@ -92,21 +95,26 @@ int BattleShip::getHitCount()
 {
 	return m_HitCount;
 }
-void playerShot(char playersChoiceChar, int playersChoiceInt, BattleField& playerField, BattleShip& battleship)
+void playerShot(BattleField& playerField, BattleShip& battleship)
 {
+	std::cout << "Стрельба по сектору" << std::endl;
+	int playersChoiceInt;
+	char playersChoiceChar;
+	setPlayersChar(playersChoiceChar);
+	setPlayersInt(playersChoiceInt);
 	if (playerField(playersChoiceChar, playersChoiceInt) > 0)
 	{
 		battleship.hitCountAfterHit();
-		std::cout << "Hit! Shoot again" << std::endl;
+		std::cout << "Попадание! Еще выстрел" << std::endl;
 	}
 	else
-		std::cout << "Miss!" << std::endl;
+		std::cout << "Промах!" << std::endl;
 }
 void setPlayersChar(char& playersChoiceChar)				//выбор буквы
 {
 do
 {
-	std::cout << "Choose letter to shoot (from 'a' to 'j' only)" << std::endl;
+	std::cout << "Введите стобец от a до j (английский алфавит) :" << std::endl;
 	std::cin >> playersChoiceChar;
 
 } while (playersChoiceChar != 'a' && playersChoiceChar != 'b' && playersChoiceChar != 'c' && playersChoiceChar != 'd' && playersChoiceChar != 'e' && playersChoiceChar != 'f' && playersChoiceChar != 'g' && playersChoiceChar != 'h' && playersChoiceChar != 'i' && playersChoiceChar != 'j');
@@ -115,7 +123,7 @@ void setPlayersInt(int& playersChoiceInt)				//выбор числа
 {
 	do
 	{
-		std::cout << "Choose number to shoot (from '1' to '10' only)" << std::endl;
+		std::cout << "Введите строку корабля от 1 до 10 :" << std::endl;
 		std::cin >> playersChoiceInt;
 
 	} while (playersChoiceInt != 1 && playersChoiceInt != 2 && playersChoiceInt != 3 && playersChoiceInt != 4 && playersChoiceInt != 5 && playersChoiceInt != 6 && playersChoiceInt != 7 && playersChoiceInt != 8 && playersChoiceInt != 9 && playersChoiceInt != 10);

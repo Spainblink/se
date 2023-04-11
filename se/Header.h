@@ -2,7 +2,7 @@
 #define HEADER_H
 #include <string>
 #include <iostream>
-const int BattleFieldSize = 10;
+const int BattleFieldSize = 10;		//размер поля
 class BattleField;
 
 class BattleShip
@@ -23,7 +23,7 @@ public:
 	void setOriental(bool oriental);
 	bool getOriental();
 	void shipWreck(BattleField& battlefield);
-	friend void playerShot(char playersChoiceChar, int playersChoiceInt, BattleField& playerField, BattleShip& battleship);
+	friend void playerShot(BattleField& playerField, BattleShip& battleship);
 	friend void BattleField::placeShip(BattleShip& battleship);
 };
 class BattleField
@@ -35,7 +35,7 @@ public:
 	void placeShip(BattleShip& battleship);										//размещение корабля
 	int& operator()(int playersChoiceInt, char playersChoiceChar);				//перегруз индексации  
 	friend void BattleShip::shipWreck(BattleField& battlefield);
-	friend void playerShot(char playersChoiceChar, int playersChoiceInt, BattleField& playerField, BattleShip& battleship);
+	friend void playerShot(BattleField& playerField, BattleShip& battleship);
 	void printField();
 };
 #endif 
