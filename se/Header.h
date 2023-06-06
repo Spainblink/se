@@ -2,6 +2,7 @@
 #define HEADER_H
 #include <string>
 #include <iostream>
+#include <map>
 const int BattleFieldSize = 10;		//размер поля
 class BattleField;
 
@@ -14,7 +15,7 @@ private:
 	bool m_Oriental;	//если false - вертикальное, если true - горизонтальное
 public:
 	static int m_Count;
-	BattleShip(int size, bool oriental = false);
+	BattleShip(int size);
 	int getHitCount();
 	int getShipSize();
 	int getId();
@@ -23,8 +24,7 @@ public:
 	void setOriental(bool oriental);
 	bool getOriental();
 	void shipWreck(BattleField& battlefield);
-	friend void playerShot(BattleField& playerField, BattleShip& battleship);
-	friend void BattleField::placeShip(BattleShip& battleship);
+	friend void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage);
 };
 class BattleField
 {
@@ -35,7 +35,7 @@ public:
 	void placeShip(BattleShip& battleship);										//размещение корабля
 	int& operator()(int playersChoiceInt, char playersChoiceChar);				//перегруз индексации  
 	friend void BattleShip::shipWreck(BattleField& battlefield);
-	friend void playerShot(BattleField& playerField, BattleShip& battleship);
+	friend void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage);
 	void printField();
 };
 #endif 

@@ -1,17 +1,25 @@
 ﻿// se.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
-//#include <iostream>
 #include "Header.h"
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
-    char playersChoiceChar;
-    int playersChoiceInt;
+    std::map <int, BattleShip> idStorage;
+    //std::map <int, BattleShip>::iterator it;
+    BattleShip testBattleShip(4);
+    BattleShip test2BattleShip(3);
+    BattleShip* pTest = &testBattleShip;
+    BattleShip* pTest2 = &test2BattleShip;
+    idStorage.insert(std::make_pair(testBattleShip.getId(), *pTest));
+    idStorage.insert(std::make_pair(test2BattleShip.getId(), *pTest2));
     BattleField test1;
     test1.printField();
-
+    test1.placeShip(testBattleShip);
+    test1.placeShip(test2BattleShip);
+    test1.printField();
+    playerShot(test1, idStorage);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"

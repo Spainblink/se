@@ -1,5 +1,8 @@
 #include "Header.h"
 int BattleShip::m_Count = 0;
+int charToInt(char pCh);
+char setPlayersChar();
+int setPlayersInt();
 BattleField::BattleField () 
 {
 	for (int raw = 0; raw < BattleFieldSize; ++raw) {
@@ -24,18 +27,20 @@ int& BattleField::operator()(int playerChoiceInt, char playerChoiceChar) //прове
 void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли корабль по горизонтали или вертикали
 {
 	bool oriental;
-	char playersChoiceChar;
-	int playersChoiceInt;
+	char playersChoiceChar = setPlayersChar();
+	int playersChoiceInt = setPlayersInt();
 	std::cout << "Размещение корабля" << std::endl;
-	std::cout << "Для размещения корабля по вертикали введите 0, по горизонтали 1: " << std::endl;
+	do
+	{
+		std::cout << "Для размещения корабля по вертикали введите 0, по горизонтали 1: " << std::endl;
+		std::cin >> oriental;
+	} while (oriental != 0 && oriental != 1);
 	battleship.setOriental(oriental);
-	setPlayersChar(playersChoiceChar);
-	setPlayersInt(playersChoiceInt);
 	if (battleship.getOriental())
 	{
-		if ((charToInt(playersChoiceChar) + battleship.getShipSize() - BattleFieldSize) < 0)
+		if (charToInt(playersChoiceChar) + battleship.getShipSize() >= BattleFieldSize)
 		{
-			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - battleship.getShipSize()); --start)
+			for (int start = BattleFieldSize - 1; start >= (BattleFieldSize - battleship.getShipSize()); --start)
 			{
 				m_BattleField[playersChoiceInt - 1][start] = battleship.getId();
 			}
@@ -50,9 +55,9 @@ void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли ко
 	}
 	else if (battleship.getOriental() == false)
 	{
-		if ((playersChoiceInt - 1 + battleship.getShipSize() - BattleFieldSize) < 0)
+		if (playersChoiceInt - 1 + battleship.getShipSize() >= BattleFieldSize)
 		{
-			for (int start = BattleFieldSize - 1; start > (BattleFieldSize - battleship.getShipSize()); --start)
+			for (int start = BattleFieldSize - 1; start >= (BattleFieldSize - battleship.getShipSize()); --start)
 			{
 				m_BattleField[start][charToInt(playersChoiceChar)] = battleship.getId();
 			}
@@ -64,10 +69,10 @@ void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли ко
 			}
 	}
 };
-BattleShip::BattleShip(int size, bool oriental = false)
+BattleShip::BattleShip(int size)
 {
 	m_ShipSize = size;
-	m_Oriental = oriental;
+	m_Oriental = false;
 	m_HitCount = m_ShipSize;
 	m_Id = ++m_Count;
 };
@@ -95,38 +100,45 @@ int BattleShip::getHitCount()
 {
 	return m_HitCount;
 }
-void playerShot(BattleField& playerField, BattleShip& battleship)
+void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage)
 {
 	std::cout << "Стрельба по сектору" << std::endl;
-	int playersChoiceInt;
-	char playersChoiceChar;
-	setPlayersChar(playersChoiceChar);
-	setPlayersInt(playersChoiceInt);
-	if (playerField(playersChoiceChar, playersChoiceInt) > 0)
+	int playersChoiceInt = setPlayersInt();
+	char playersChoiceChar = setPlayersChar();
+	if (playerField(playersChoiceInt, playersChoiceChar) > 0)
 	{
-		battleship.hitCountAfterHit();
-		std::cout << "Попадание! Еще выстрел" << std::endl;
-	}
+		std::cout << "Попадание!" << std::endl;
+		auto it = idStorage.find(playerField(playersChoiceInt, playersChoiceChar));
+		it->second.hitCountAfterHit();
+		if (it->second.getHitCount() == 0)
+			it->second.shipWreck(playerField);
+		std::cout << "Еще выстрел!" << std::endl;
+		playerShot(playerField, idStorage);
+	} 
 	else
 		std::cout << "Промах!" << std::endl;
 }
-void setPlayersChar(char& playersChoiceChar)				//выбор буквы
+char setPlayersChar()				//выбор буквы
 {
+	char playersChoiceChar;
 do
 {
 	std::cout << "Введите стобец от a до j (английский алфавит) :" << std::endl;
 	std::cin >> playersChoiceChar;
 
 } while (playersChoiceChar != 'a' && playersChoiceChar != 'b' && playersChoiceChar != 'c' && playersChoiceChar != 'd' && playersChoiceChar != 'e' && playersChoiceChar != 'f' && playersChoiceChar != 'g' && playersChoiceChar != 'h' && playersChoiceChar != 'i' && playersChoiceChar != 'j');
+	return  playersChoiceChar;
 };
-void setPlayersInt(int& playersChoiceInt)				//выбор числа
+int setPlayersInt()				//выбор числа
 {
+	int playersChoiceInt;
 	do
 	{
 		std::cout << "Введите строку корабля от 1 до 10 :" << std::endl;
 		std::cin >> playersChoiceInt;
 
 	} while (playersChoiceInt != 1 && playersChoiceInt != 2 && playersChoiceInt != 3 && playersChoiceInt != 4 && playersChoiceInt != 5 && playersChoiceInt != 6 && playersChoiceInt != 7 && playersChoiceInt != 8 && playersChoiceInt != 9 && playersChoiceInt != 10);
+	return playersChoiceInt;
 };
 int charToInt(char pCh)
 {
