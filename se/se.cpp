@@ -7,7 +7,6 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
     std::map <int, BattleShip> idStorage;
-    //std::map <int, BattleShip>::iterator it;
     BattleShip testBattleShip(4);
     BattleShip test2BattleShip(3);
     BattleShip* pTest = &testBattleShip;

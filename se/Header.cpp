@@ -7,32 +7,41 @@ BattleField::BattleField ()
 {
 	for (int raw = 0; raw < BattleFieldSize; ++raw) {
 		for (int col = 0; col < BattleFieldSize; ++col) {
-			m_BattleField[raw][col] = 0;
+				m_BattleField[raw][col] = 0;
 		}
 	}
-};
+}
 void BattleField::printField()
 {
-	for (int raw = 0; raw < BattleFieldSize; ++raw) {
-		for (int col = 0; col < BattleFieldSize; ++col) {
-			std::cout << m_BattleField[raw][col] << " ";
+	bool answer;
+	do {
+		std::cout << "Вывести поле ? (1 - вывести, 0 - нет)" << std::endl;
+		std::cin >> answer;
+	} while (answer != 1 && answer != 0);
+	if (answer) {
+		for (int raw = 0; raw < BattleFieldSize; ++raw) {
+			for (int col = 0; col < BattleFieldSize; ++col) {
+				std::cout << m_BattleField[raw][col] << " ";
+			}
+			std::cout << std::endl;
 		}
-		std::cout << std::endl;
 	}
-};
-int& BattleField::operator()(int playerChoiceInt, char playerChoiceChar) //проверка корректности проводится на входе, после ввода юзера
-{
-	return m_BattleField[playerChoiceInt - 1][charToInt(playerChoiceChar)];
 }
-void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли корабль по горизонтали или вертикали
+
+int& BattleField::operator()(int firstInt, int secondInt)
+{
+	return m_BattleField[firstInt][secondInt];
+}
+void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли корабль по горизонтали или вертикали в методе размещения корабля  
 {
 	bool oriental;
 	char playersChoiceChar = setPlayersChar();
 	int playersChoiceInt = setPlayersInt();
+	battleship.setCharCoordinate(playersChoiceChar);
 	std::cout << "Размещение корабля" << std::endl;
 	do
 	{
-		std::cout << "Для размещения корабля по вертикали введите 0, по горизонтали 1: " << std::endl;
+		std::cout << "Для размещения корабля по вертикали введите - 0, по горизонтали - 1: " << std::endl;
 		std::cin >> oriental;
 	} while (oriental != 0 && oriental != 1);
 	battleship.setOriental(oriental);
@@ -74,8 +83,13 @@ BattleShip::BattleShip(int size)
 	m_ShipSize = size;
 	m_Oriental = false;
 	m_HitCount = m_ShipSize;
+	m_pIntCoordinate = new int[m_ShipSize];
 	m_Id = ++m_Count;
 };
+BattleShip::~BattleShip()
+{
+	delete[] m_pIntCoordinate;
+}
 int BattleShip::getShipSize()
 	{
 		return m_ShipSize;
@@ -93,30 +107,50 @@ void BattleShip::hitCountAfterHit() {
 };
 void BattleShip::shipWreck(BattleField& battlefield) 
 {
+	if (this->getOriental())
+	{
 
+	}
+	else
+	{
+
+	}
 };
 
 int BattleShip::getHitCount()
 {
 	return m_HitCount;
 }
-void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage)
+void BattleShip::setCharCoordinate(char charCoordinate)
+{
+	m_CharCoordinate = charCoordinate;
+}
+char BattleShip::getCharCoordinate()
+{
+	return m_CharCoordinate;
+}
+void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage) 
 {
 	std::cout << "Стрельба по сектору" << std::endl;
 	int playersChoiceInt = setPlayersInt();
 	char playersChoiceChar = setPlayersChar();
-	if (playerField(playersChoiceInt, playersChoiceChar) > 0)
+	if (playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) > 0)
 	{
 		std::cout << "Попадание!" << std::endl;
-		auto it = idStorage.find(playerField(playersChoiceInt, playersChoiceChar));
+		auto it = idStorage.find(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)));
 		it->second.hitCountAfterHit();
 		if (it->second.getHitCount() == 0)
 			it->second.shipWreck(playerField);
 		std::cout << "Еще выстрел!" << std::endl;
+		playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
 		playerShot(playerField, idStorage);
-	} 
-	else
-		std::cout << "Промах!" << std::endl;
+	}
+	else if(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) == 0)
+	{
+	std::cout << "Промах!" << std::endl;
+	playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
+	}
+
 }
 char setPlayersChar()				//выбор буквы
 {
