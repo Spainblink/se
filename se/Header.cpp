@@ -17,6 +17,11 @@ void BattleField::printField()
 	do {
 		std::cout << "Вывести поле ? (1 - вывести, 0 - нет)" << std::endl;
 		std::cin >> answer;
+		if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(32767, '\n');
+		}
 	} while (answer != 1 && answer != 0);
 	if (answer) {
 		for (int raw = 0; raw < BattleFieldSize; ++raw) {
@@ -37,12 +42,17 @@ void BattleField::placeShip(BattleShip& battleship)		//проверка поместится ли ко
 	bool oriental;
 	char playersChoiceChar = setPlayersChar();
 	int playersChoiceInt = setPlayersInt();
-	battleship.setCharCoordinate(playersChoiceChar);
+	battleship.setCharCoordinate(playersChoiceChar);	//либо строка либо столбец, в зависимости от ориентации
 	std::cout << "Размещение корабля" << std::endl;
 	do
 	{
 		std::cout << "Для размещения корабля по вертикали введите - 0, по горизонтали - 1: " << std::endl;
 		std::cin >> oriental;
+		if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(32767, '\n');
+		}
 	} while (oriental != 0 && oriental != 1);
 	battleship.setOriental(oriental);
 	if (battleship.getOriental())
@@ -132,9 +142,9 @@ char BattleShip::getCharCoordinate()
 void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage) 
 {
 	std::cout << "Стрельба по сектору" << std::endl;
-	int playersChoiceInt = setPlayersInt();
 	char playersChoiceChar = setPlayersChar();
-	if (playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) > 0)
+	int playersChoiceInt = setPlayersInt();
+	while (playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) > 0)
 	{
 		std::cout << "Попадание!" << std::endl;
 		auto it = idStorage.find(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)));
@@ -143,9 +153,10 @@ void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage)
 			it->second.shipWreck(playerField);
 		std::cout << "Еще выстрел!" << std::endl;
 		playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
-		playerShot(playerField, idStorage);
+		it = idStorage.begin();
+		//playerShot(playerField, idStorage);
 	}
-	else if(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) == 0)
+	if(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) == 0)
 	{
 	std::cout << "Промах!" << std::endl;
 	playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
@@ -155,12 +166,17 @@ void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage)
 char setPlayersChar()				//выбор буквы
 {
 	char playersChoiceChar;
-do
-{
-	std::cout << "Введите стобец от a до j (английский алфавит) :" << std::endl;
-	std::cin >> playersChoiceChar;
+	do 
+	{
+		std::cout << "Введите стобец от a до j (английский алфавит) :" << std::endl;
+		std::cin >> playersChoiceChar;
+		if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(32767, '\n');
+		}
+	} while (playersChoiceChar != 'a' && playersChoiceChar != 'b' && playersChoiceChar != 'c' && playersChoiceChar != 'd' && playersChoiceChar != 'e' && playersChoiceChar != 'f' && playersChoiceChar != 'g' && playersChoiceChar != 'h' && playersChoiceChar != 'i' && playersChoiceChar != 'j');
 
-} while (playersChoiceChar != 'a' && playersChoiceChar != 'b' && playersChoiceChar != 'c' && playersChoiceChar != 'd' && playersChoiceChar != 'e' && playersChoiceChar != 'f' && playersChoiceChar != 'g' && playersChoiceChar != 'h' && playersChoiceChar != 'i' && playersChoiceChar != 'j');
 	return  playersChoiceChar;
 };
 int setPlayersInt()				//выбор числа
@@ -168,10 +184,15 @@ int setPlayersInt()				//выбор числа
 	int playersChoiceInt;
 	do
 	{
-		std::cout << "Введите строку корабля от 1 до 10 :" << std::endl;
+		std::cout << "Введите строку поля от 1 до 10 :" << std::endl;
 		std::cin >> playersChoiceInt;
-
+		if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(32767, '\n');
+		}
 	} while (playersChoiceInt != 1 && playersChoiceInt != 2 && playersChoiceInt != 3 && playersChoiceInt != 4 && playersChoiceInt != 5 && playersChoiceInt != 6 && playersChoiceInt != 7 && playersChoiceInt != 8 && playersChoiceInt != 9 && playersChoiceInt != 10);
+
 	return playersChoiceInt;
 };
 int charToInt(char pCh)

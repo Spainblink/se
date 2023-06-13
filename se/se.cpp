@@ -19,6 +19,7 @@ int main()
     test1.placeShip(test2BattleShip);
     test1.printField();
     playerShot(test1, idStorage);
+    std::cout << "the end" << std::endl;
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"

@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <map>
-const int BattleFieldSize = 10;		//размер поля
+const int BattleFieldSize = 10;		//размер поля test
 class BattleField;
 
 class BattleShip
