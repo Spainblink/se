@@ -115,16 +115,25 @@ bool BattleShip::getOriental()
 void BattleShip::hitCountAfterHit() {
 	--m_HitCount;
 };
-void BattleShip::shipWreck(BattleField& battlefield) 
+void BattleShip::shipWreck(BattleField& battlefield)		//изменение полей вокруг потопленного корабля
 {
-	if (this->getOriental())
+	int rowStart = m_pIntCoordinate[0] - 2;
+	int rowEnd = m_pIntCoordinate[m_ShipSize - 1];
+	int colStart = charToInt(m_CharCoordinate) - 2;
+	int colEnd = charToInt(m_CharCoordinate);
+	for (int row = rowStart; row <= rowEnd + 1; ++row)
 	{
-
+		for (int col = colStart; col <= colEnd + 1; ++col)
+		{
+			if (row >= 0 && row < BattleFieldSize && col >= 0 && col < BattleFieldSize)
+			{
+				int& cell = battlefield(row, col);
+				if (cell > 0)
+					cell = -1;
+			}
+		}
 	}
-	else
-	{
-
-	}
+	std::cout << "Корабль потоплен!" << std::endl;
 };
 
 int BattleShip::getHitCount()
@@ -144,24 +153,32 @@ void playerShot(BattleField& playerField, std::map<int, BattleShip>& idStorage)
 	std::cout << "Стрельба по сектору" << std::endl;
 	char playersChoiceChar = setPlayersChar();
 	int playersChoiceInt = setPlayersInt();
-	while (playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) > 0)
+	if (playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) > 0)
 	{
 		std::cout << "Попадание!" << std::endl;
 		auto it = idStorage.find(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)));
 		it->second.hitCountAfterHit();
 		if (it->second.getHitCount() == 0)
-			it->second.shipWreck(playerField);
+			{
+				it->second.shipWreck(playerField);
+				playerField.printField();
+			}
 		std::cout << "Еще выстрел!" << std::endl;
 		playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
-		it = idStorage.begin();
-		//playerShot(playerField, idStorage);
+		//it = idStorage.begin();
+		playerField.printField();
+		playerShot(playerField, idStorage);
 	}
-	if(playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) == 0)
+	else if (playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) == 0)
 	{
-	std::cout << "Промах!" << std::endl;
-	playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
+		std::cout << "Промах!" << std::endl;
+		playerField(playersChoiceInt - 1, charToInt(playersChoiceChar)) = -1;
 	}
-
+	else
+	{
+		std::cout << "Вы уже стреляли по этому сектору!" << std::endl;
+		playerShot(playerField, idStorage);
+	}
 }
 char setPlayersChar()				//выбор буквы
 {
